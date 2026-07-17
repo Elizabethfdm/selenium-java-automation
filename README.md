@@ -22,14 +22,17 @@ Projeto desenvolvido durante meus estudos de Automação de Testes utilizando Ja
 - Login inválido
 - Esperas explícitas (WebDriverWait)
 
-## Projeto em evolução
 
-Próximos passos:
+## Arquitetura
 
-- DriverFactory
-- ConfigReader
-- Screenshots
-- Relatórios
-- GitHub Actions
-- Jenkins
-- Azure DevOps
+Java
+↓
+Selenium
+↓
+TestNG
+↓
+Docker + Selenium Grid
+↓
+GitHub Actions
+↓
+Jenkins
