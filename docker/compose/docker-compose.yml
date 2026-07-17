@@ -1,0 +1,67 @@
+services:
+
+  selenium-hub:
+    image: selenium/hub:4.45.0
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - --fail
+        - http://localhost:4444/status
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  chrome:
+    image: selenium/node-chrome:4.45.0
+    container_name: selenium-node-chrome
+    shm_size: 2gb
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 2
+      SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+    ports:
+      - "7900:7900"
+
+  firefox:
+    image: selenium/node-firefox:4.45.0
+    container_name: selenium-node-firefox
+    shm_size: 2gb
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 2
+      SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+    ports:
+      - "7901:7900"
+
+  testes:
+    build:
+      context: ../..
+      dockerfile: docker/images/Dockerfile
+    container_name: selenium-java-tests
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+      chrome:
+        condition: service_started
+      firefox:
+        condition: service_started
+    environment:
+      SELENIUM_REMOTE_URL: http://selenium-hub:4444
+    volumes:
+      - ../../target:/app/target
