@@ -3,6 +3,7 @@ package pages;
 import base.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import config.ConfigReader;
 
 public class LoginPage extends BasePage {
 
@@ -16,7 +17,7 @@ public class LoginPage extends BasePage {
     }
 
     public void acessarSite() {
-        driver.get("https://www.saucedemo.com");
+        driver.get(ConfigReader.getProperty("url"));
     }
 
     private void informarUsuario(String usuario) {
