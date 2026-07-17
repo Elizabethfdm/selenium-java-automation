@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  MAVEN_OPTS: '-Xmx1024m'
+
+steps:
+  - checkout: self
+    displayName: Baixar código-fonte
+
+  - task: Maven@4
+    displayName: Executar testes automatizados
+    inputs:
+      mavenPomFile: pom.xml
+      goals: test
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: JDKVersion
+      jdkVersionOption: '1.17'
+      mavenVersionOption: Default
+      mavenOptions: '$(MAVEN_OPTS)'
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publicar relatórios e evidências
+    condition: always()
+    inputs:
+      targetPath: '$(System.DefaultWorkingDirectory)/target'
+      artifact: resultados-testes
+      publishLocation: pipeline
